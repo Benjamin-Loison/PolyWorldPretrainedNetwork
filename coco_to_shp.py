@@ -41,5 +41,5 @@ def cocojson_to_shapefiles(input_json, gti_annotations, output_folder):
 
 if __name__ == "__main__":
     cocojson_to_shapefiles(input_json="./predictions.json",
-                            gti_annotations="/home/stefano/Workspace/data/mapping_challenge_dataset/raw/val/annotation.json",
+                            gti_annotations="val/annotation.json",
                             output_folder="./shapefiles/")
