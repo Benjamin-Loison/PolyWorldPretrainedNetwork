@@ -38,18 +38,18 @@ def prediction(batch_size, images_directory, annotations_path):
 
     # Load network modules
     model = R2U_Net()
-    model = model.cuda()
+    model = model.cpu()
     model = model.train()
 
     head_ver = DetectionBranch()
-    head_ver = head_ver.cuda()
+    head_ver = head_ver.cpu()
     head_ver = head_ver.train()
 
     suppression = NonMaxSuppression()
-    suppression = suppression.cuda()
+    suppression = suppression.cpu()
 
     matching = OptimalMatching()
-    matching = matching.cuda()
+    matching = matching.cpu()
     matching = matching.train()
 
     # NOTE: The modules are set to .train() mode during inference to make sure that the BatchNorm layers 
@@ -57,9 +57,9 @@ def prediction(batch_size, images_directory, annotations_path):
     # Experimentally, using batch stats makes the network perform better during inference.
 
     print("Loading pretrained model")
-    model.load_state_dict(torch.load("./trained_weights/polyworld_backbone"))
-    head_ver.load_state_dict(torch.load("./trained_weights/polyworld_seg_head"))
-    matching.load_state_dict(torch.load("./trained_weights/polyworld_matching"))
+    model.load_state_dict(torch.load("./trained_weights/polyworld_backbone", map_location=torch.device('cpu')))
+    head_ver.load_state_dict(torch.load("./trained_weights/polyworld_seg_head", map_location=torch.device('cpu')))
+    matching.load_state_dict(torch.load("./trained_weights/polyworld_matching", map_location=torch.device('cpu')))
 
     # Initiate the dataloader
     CrowdAI_dataset = CrowdAI(images_directory=images_directory, annotations_path=annotations_path)
@@ -71,7 +71,7 @@ def prediction(batch_size, images_directory, annotations_path):
     predictions = []
     for i_batch, sample_batched in enumerate(train_iterator):
 
-        rgb = sample_batched['image'].cuda().float()
+        rgb = sample_batched['image'].cpu().float()
         idx = sample_batched['image_idx']
 
         t0 = time.time()
