@@ -12,6 +12,7 @@ from models.backbone import R2U_Net, NonMaxSuppression, DetectionBranch
 from dataloader_crowdai import CrowdAI
 from pycocotools.coco import COCO
 
+import torch_xla.core.xla_model as xm
 
 def bounding_box_from_points(points):
     points = np.array(points).flatten()
@@ -37,29 +38,24 @@ def single_annotation(image_id, poly):
 def prediction(batch_size, images_directory, annotations_path):
 
     # Load network modules
-    model = R2U_Net()
-    model = model.cpu()
-    model = model.train()
+    device = xm.xla_device()
 
-    head_ver = DetectionBranch()
-    head_ver = head_ver.cpu()
-    head_ver = head_ver.train()
+    model = R2U_Net().train().to(device)
 
-    suppression = NonMaxSuppression()
-    suppression = suppression.cpu()
+    head_ver = DetectionBranch().train().to(device)
 
-    matching = OptimalMatching()
-    matching = matching.cpu()
-    matching = matching.train()
+    suppression = NonMaxSuppression().to(device)
+
+    matching = OptimalMatching().train().to(device)
 
     # NOTE: The modules are set to .train() mode during inference to make sure that the BatchNorm layers 
     # rely on batch statistics rather than the mean and variance estimated during training. 
     # Experimentally, using batch stats makes the network perform better during inference.
 
     print("Loading pretrained model")
-    model.load_state_dict(torch.load("./trained_weights/polyworld_backbone", map_location=torch.device('cpu')))
-    head_ver.load_state_dict(torch.load("./trained_weights/polyworld_seg_head", map_location=torch.device('cpu')))
-    matching.load_state_dict(torch.load("./trained_weights/polyworld_matching", map_location=torch.device('cpu')))
+    model.load_state_dict(torch.load("./trained_weights/polyworld_backbone", map_location=torch.device('xla')))
+    head_ver.load_state_dict(torch.load("./trained_weights/polyworld_seg_head", map_location=torch.device('xla')))
+    matching.load_state_dict(torch.load("./trained_weights/polyworld_matching", map_location=torch.device('xla')))
 
     # Initiate the dataloader
     CrowdAI_dataset = CrowdAI(images_directory=images_directory, annotations_path=annotations_path)
