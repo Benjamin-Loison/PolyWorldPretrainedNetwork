@@ -53,9 +53,9 @@ def prediction(batch_size, images_directory, annotations_path):
     # Experimentally, using batch stats makes the network perform better during inference.
 
     print("Loading pretrained model")
-    model.load_state_dict(torch.load("./trained_weights/polyworld_backbone", map_location=device))
-    head_ver.load_state_dict(torch.load("./trained_weights/polyworld_seg_head", map_location=device))
-    matching.load_state_dict(torch.load("./trained_weights/polyworld_matching", map_location=device))
+    model.load_state_dict(torch.load("./trained_weights/polyworld_backbone"))
+    head_ver.load_state_dict(torch.load("./trained_weights/polyworld_seg_head"))
+    matching.load_state_dict(torch.load("./trained_weights/polyworld_matching"))
 
     # Initiate the dataloader
     CrowdAI_dataset = CrowdAI(images_directory=images_directory, annotations_path=annotations_path)
