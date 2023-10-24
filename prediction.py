@@ -54,11 +54,11 @@ def prediction(batch_size, images_directory, annotations_path):
 
     print("Loading pretrained model")
     model.load_state_dict(torch.load("./trained_weights/polyworld_backbone", map_location=torch.device('cpu')))
-    model = model.to(device)
+    #model = model.to(device)
     head_ver.load_state_dict(torch.load("./trained_weights/polyworld_seg_head", map_location=torch.device('cpu')))
-    head_ver = head_ver.to(device)
+    #head_ver = head_ver.to(device)
     matching.load_state_dict(torch.load("./trained_weights/polyworld_matching", map_location=torch.device('cpu')))
-    matching = matching.to(device)
+    #matching = matching.to(device)
 
     # Initiate the dataloader
     CrowdAI_dataset = CrowdAI(images_directory=images_directory, annotations_path=annotations_path)
@@ -70,7 +70,10 @@ def prediction(batch_size, images_directory, annotations_path):
     predictions = []
     for i_batch, sample_batched in enumerate(train_iterator):
 
-        rgb = sample_batched['image'].to(device).float()
+        rgb = sample_batched['image'].to(device)
+        print(type(rgb))
+        rgb = rgb.float()
+        print(type(rgb))
         idx = sample_batched['image_idx']
 
         t0 = time.time()
