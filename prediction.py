@@ -85,12 +85,17 @@ def prediction(batch_size, images_directory, annotations_path):
 
         t0 = time.time()
 
+        print('begin')
         features = model(rgb)
+        print('alpha')
         occupancy_grid = head_ver(features)
+        print('beta')
 
         _, graph_pressed = suppression(occupancy_grid)
+        print('charlie')
 
-        poly = matching.predict(rgb, features, graph_pressed) 
+        poly = matching.predict(rgb, features, graph_pressed)
+        print('delta')
 
         speed.append(time.time() - t0)
 
