@@ -70,7 +70,10 @@ def prediction(batch_size, images_directory, annotations_path):
     predictions = []
     for i_batch, sample_batched in enumerate(train_iterator):
 
-        rgb = sample_batched['image'].cpu().float()
+        #rgb = sample_batched['image'].cpu().float()
+        rgb = sample_batched['image'].cpu()
+        rgb = rgb.to(device)
+        rgb = rgb.float()
         '''
         rgb = sample_batched['image'].to(device)
         print(type(rgb))
