@@ -69,6 +69,7 @@ def prediction(batch_size, images_directory, annotations_path):
     speed = []
     predictions = []
     for i_batch, sample_batched in enumerate(train_iterator):
+        print(i_batch)
 
         #rgb = sample_batched['image'].cpu().float()
         rgb = sample_batched['image'].cpu()
